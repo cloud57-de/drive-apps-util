@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Testpage Drive-App-Util</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+    <h1>Testpage Drive-App-Util</h1>
+    <h2>Login</h2>
+    <p>
+        <button id="calllogin" onclick="driveAppsUtil.login().then((user) => {document.getElementById('login').textContent=JSON.stringify(user);});">Login</button>
+        <button id="loginclear" onclick="document.getElementById('login').textContent='';">Clear</button>
+        <div id="login"></div>
+
+    </p>
+    <h2>GetDocumentContent</h2>
+    <p>
+        <button id="getdocumentcontent" onclick="driveAppsUtil.getDocumentContent('0B-K7oJWHTbZ8RjZ0LWhEM3JQbm8').then((body) => {document.getElementById('documentcontent').textContent=body;});">GetDocumentContent</button>
+        <button id="getdocumentcontentclear" onclick="document.getElementById('documentcontent').textContent='';">Clear</button>
+        <div id="documentcontent"></div>
+    </p>
+    <h2>GetDocumentMeta</h2>
+    <p>
+        <button id="getdocumentMeta" onclick="driveAppsUtil.getDocumentMeta('0B-K7oJWHTbZ8RjZ0LWhEM3JQbm8').then((fileinfo) => {document.getElementById('documentmeta').textContent=JSON.stringify(fileinfo);});">GetDocumentMeta</button>
+        <button id="getdocumentMetaclear" onclick="document.getElementById('documentmeta').textContent='';">Clear</button>
+        <div id="documentmeta"></div>
+    </p>
+    <script src="main.js"></script>
+</body>
+
+</html>
