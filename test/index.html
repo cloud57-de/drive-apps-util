@@ -15,6 +15,7 @@
     <p>
         <button id="calllogin" onclick="driveAppsUtil.login().then((user) => {document.getElementById('login').textContent=JSON.stringify(user);});">Login</button>
         <button id="loginclear" onclick="document.getElementById('login').textContent='';">Clear</button>
+        <button id="calllogout" onclick="driveAppsUtil.logout();">Logout</button>
         <div id="login"></div>
 
     </p>
@@ -29,6 +30,15 @@
         <button id="getdocumentMeta" onclick="driveAppsUtil.getDocumentMeta('0B-K7oJWHTbZ8RjZ0LWhEM3JQbm8').then((fileinfo) => {document.getElementById('documentmeta').textContent=JSON.stringify(fileinfo);});">GetDocumentMeta</button>
         <button id="getdocumentMetaclear" onclick="document.getElementById('documentmeta').textContent='';">Clear</button>
         <div id="documentmeta"></div>
+    </p>
+    <h2>UpdateDocumentContent</h2>
+    <p>
+        <input id="name" type="text" ></input>
+        <textarea id="content" rows="40" cols="100"></textarea> 
+        <button id="updatedocumentContent" onclick="updateContent()">UpdateDocumentContent</button>
+        <button id="updateonlydocumentmetadata" onclick="updateOnlyMetadata()">UpdateOnlyDocumentMetadata</button>
+        <button id="updatedocumentContentclear" onclick="document.getElementById('updatedocumentcontent').textContent='';">Clear</button>
+        <div id="updatedocumentcontent"></div>
     </p>
     <script src="main.js"></script>
 </body>
