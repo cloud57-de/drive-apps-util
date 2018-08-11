@@ -136,6 +136,59 @@ export default class DriveAppsUtil {
         });
     }
 
+    createDocument(metadata, content) {
+        console.log("createdocument");
+        return new Promise((resolve, reject) => {
+            let contentlength = 0;
+            if (metadata) {
+                contentlength = JSON.stringify(metadata).length;
+            }
+            if (content) {
+                gapi.client.request({
+                    'method': 'POST',
+                    'body': metadata,
+                    'path': 'https://www.googleapis.com/upload/drive/v3/files',
+                    'params': {
+                        'uploadType': 'resumable', 'supportsTeamDrives': true,
+                        'headers': {
+                            'Content-Type': 'application/json; charset=UTF-8',
+                            'Content-Length': contentlength
+                        }
+                    }
+                }).then((response) => {
+                    let contentlength = 0;
+                    if (content) {
+                        contentlength = content.length;
+                    }
+                    gapi.client.request({
+                        'method': 'PUT',
+                        'body': content,
+                        'path': response.headers.location,
+                        'headers': {
+                            'Content-Type': metadata.mimeType,
+                            'Content-Length': contentlength
+                        }
+                    }).then((response) => {
+                        let fileinfo = JSON.parse(response.body);
+                        resolve(fileinfo);
+                    });
+                });
+            }
+            else {
+                gapi.client.request({
+                    'method': 'POST',
+                    'body': metadata,
+                    'path': 'https://www.googleapis.com/drive/v3/files',
+                    'params': {
+                        'supportsTeamDrives': true
+                    }
+                }).then((response) => {
+                    let fileinfo = JSON.parse(response.body);
+                    resolve(fileinfo);
+                });
+            }
+        });
+    }
 
 }
 

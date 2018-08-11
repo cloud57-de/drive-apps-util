@@ -33,12 +33,34 @@
     </p>
     <h2>UpdateDocumentContent</h2>
     <p>
-        <input id="name" type="text" ></input>
-        <textarea id="content" rows="40" cols="100"></textarea> 
+        <p>
+            <label for="name">Name</label>
+            <input id="name" type="text"></input>
+        </p>
+        <p>
+            <label for="content">Content</label>
+            <textarea id="content" rows="40" cols="100"></textarea>
+        </p>
         <button id="updatedocumentContent" onclick="updateContent()">UpdateDocumentContent</button>
         <button id="updateonlydocumentmetadata" onclick="updateOnlyMetadata()">UpdateOnlyDocumentMetadata</button>
         <button id="updatedocumentContentclear" onclick="document.getElementById('updatedocumentcontent').textContent='';">Clear</button>
         <div id="updatedocumentcontent"></div>
+    </p>
+
+    <h2>CreateDocumentContent</h2>
+    <p>
+        <p>
+            <label for="newname">Name</label>
+            <input id="newname" type="text"></input>
+        </p>
+        <p>
+            <label for="newcontent">Content</label>
+            <textarea id="newcontent" rows="40" cols="100"></textarea>
+        </p>
+        <button id="createdocumentContent" onclick="createContent()">CreateDocumentContent</button>
+        <button id="createonlydocumentmetadata" onclick="createOnlyMetadata()">CreateOnlyDocumentMetadata</button>
+        <button id="createdocumentContentclear" onclick="document.getElementById('createdocumentcontent').textContent='';">Clear</button>
+        <div id="createdocumentcontent"></div>
     </p>
     <script src="main.js"></script>
 </body>

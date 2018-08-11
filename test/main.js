@@ -1,7 +1,7 @@
 import DriveAppsUtil from "../src/driveappsutil.js";
 
 let options = {
-    "clientId": "349923725301-cn75hqucfe63q2r40j1i40oiuocgtpst.apps.googleusercontent.com",
+    "clientId": "145940141011-s38iu25hk8guo3tssbhfncfljn53i19k.apps.googleusercontent.com",
     "scope": [
       "profile",
       "https://www.googleapis.com/auth/drive",
@@ -40,3 +40,21 @@ window.updateOnlyMetadata = () => {
     .then((fileinfo) => {document.getElementById('updatedocumentcontent').textContent=JSON.stringify(fileinfo);});
 }
 
+window.createContent = () => {
+    let metadata = JSON.stringify({
+        name: document.getElementById('newname').value,
+        mimeType: "text/plain"
+    });
+
+    driveAppsUtil.createDocument(metadata, document.getElementById('newcontent').value)
+    .then((fileinfo) => {document.getElementById('createdocumentcontent').textContent=JSON.stringify(fileinfo);});
+}
+
+window.createOnlyMetadata = () => {
+    let metadata = JSON.stringify({
+        name: document.getElementById('newname').value
+    });
+
+    driveAppsUtil.createDocument(metadata)
+    .then((fileinfo) => {document.getElementById('createdocumentcontent').textContent=JSON.stringify(fileinfo);});
+}
