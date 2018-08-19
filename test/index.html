@@ -13,7 +13,22 @@
     <h1>Testpage Drive-App-Util</h1>
     <h2>Login</h2>
     <p>
-        <button id="calllogin" onclick="driveAppsUtil.login().then((user) => {document.getElementById('login').textContent=JSON.stringify(user);});">Login</button>
+        <script>
+            function _dologin(){
+                driveAppsUtil.login().then(
+                    (user) => {
+                        document.getElementById('login').textContent = JSON.stringify(user);
+                    }
+                ).catch(
+                    (e) => {
+                        console.log("error");
+                        console.log(e);
+                        alert("Error: " + e.error );
+                    }
+                );
+            }
+        </script>
+        <button id="calllogin" onclick="_dologin()">Login</button>
         <button id="loginclear" onclick="document.getElementById('login').textContent='';">Clear</button>
         <button id="calllogout" onclick="driveAppsUtil.logout();">Logout</button>
         <div id="login"></div>

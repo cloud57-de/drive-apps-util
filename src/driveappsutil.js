@@ -11,25 +11,39 @@ export default class DriveAppsUtil {
     init() {
         var loadGoogleApi = this.loadGoogleApi;
         return new Promise((resolve, reject) => {
-            loadGoogleApi.loadGoogleAPI().then(() => {
-                loadGoogleApi.init().then(() => {
-                    resolve();
+            try{
+                loadGoogleApi.loadGoogleAPI().then(() => {
+                    loadGoogleApi.init().then(() => {
+                        resolve();
+                    }).catch((e) => {
+                        reject(e);
+                    });
+                }).catch((e) => {
+                    reject(e);
                 });
-            });
+            } catch (e) {
+                reject(e);
+            }
         });
     }
 
     login() {
         console.log("login");
         return new Promise(function (resolve, reject) {
-            var auth = window.gapi.auth2.getAuthInstance();
-            if (auth.currentUser.get() == undefined || !auth.currentUser.get().isSignedIn()) {
-                auth.signIn().then((user) => {
-                    resolve(user);
-                });
-            }
-            else {
-                resolve(auth.currentUser);
+            try{
+                var auth = window.gapi.auth2.getAuthInstance();
+                if (auth.currentUser.get() == undefined || !auth.currentUser.get().isSignedIn()) {
+                    auth.signIn().then((user) => {
+                        resolve(user);
+                    }).catch( (e) => {
+                        reject(e);
+                    });
+                }
+                else {
+                    resolve(auth.currentUser);
+                }
+            } catch (e) {
+                reject(e);
             }
         });
     }
@@ -191,4 +205,3 @@ export default class DriveAppsUtil {
     }
 
 }
-

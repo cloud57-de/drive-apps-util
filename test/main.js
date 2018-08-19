@@ -8,7 +8,7 @@ let options = {
       "https://www.googleapis.com/auth/drive.install"
     ]
 };
-  
+
 let driveAppsUtil = new DriveAppsUtil(options);
 driveAppsUtil.init().then(
     () => {
@@ -18,7 +18,6 @@ driveAppsUtil.init().then(
         console.log(reason);
     }
 );
-
 
 window.updateContent = () => {
     let metadata = JSON.stringify({
