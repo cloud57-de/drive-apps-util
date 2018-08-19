@@ -9,13 +9,14 @@ let options = {
     ]
 };
 
-let driveAppsUtil = new DriveAppsUtil(options);
+let driveAppsUtil = new DriveAppsUtil(options,true);
+
 driveAppsUtil.init().then(
     () => {
         window.driveAppsUtil = driveAppsUtil;
     },
-    reason => {
-        console.log(reason);
+    (error) => {
+        console.log(error);
     }
 );
 

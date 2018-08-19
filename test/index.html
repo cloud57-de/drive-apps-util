@@ -18,14 +18,12 @@
                 driveAppsUtil.login().then(
                     (user) => {
                         document.getElementById('login').textContent = JSON.stringify(user);
+                    },
+                    (error) => {
+                        console.log(error);
+                        alert("Error: " + error.error );
                     }
-                ).catch(
-                    (e) => {
-                        console.log("error");
-                        console.log(e);
-                        alert("Error: " + e.error );
-                    }
-                );
+                )
             }
         </script>
         <button id="calllogin" onclick="_dologin()">Login</button>

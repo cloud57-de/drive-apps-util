@@ -1,26 +1,37 @@
 import LoadGoogleApi from "load-google-api";
 import { resolve } from "upath";
 
+let debug = false;
+
 export default class DriveAppsUtil {
 
-    constructor(options) {
+    constructor(options,logtoconsole) {
+        if( logtoconsole != undefined ){
+            debug = true;
+        }
         this.loadGoogleApi = new LoadGoogleApi(options);
-
     }
 
     init() {
+        if (debug) console.log("drive-apps-util_init");
         var loadGoogleApi = this.loadGoogleApi;
         return new Promise((resolve, reject) => {
             try{
-                loadGoogleApi.loadGoogleAPI().then(() => {
-                    loadGoogleApi.init().then(() => {
-                        resolve();
-                    }).catch((e) => {
-                        reject(e);
-                    });
-                }).catch((e) => {
-                    reject(e);
-                });
+                loadGoogleApi.loadGoogleAPI().then(
+                    () => {
+                        loadGoogleApi.init().then(
+                            () => {
+                                resolve();
+                            },
+                            (error) => {
+                                reject(error);
+                            }
+                        )
+                    },
+                    (error) => {
+                        reject(error);
+                    }
+                );
             } catch (e) {
                 reject(e);
             }
@@ -28,16 +39,19 @@ export default class DriveAppsUtil {
     }
 
     login() {
-        console.log("login");
+        if (debug) console.log("drive-apps-util_login");
         return new Promise(function (resolve, reject) {
             try{
                 var auth = window.gapi.auth2.getAuthInstance();
                 if (auth.currentUser.get() == undefined || !auth.currentUser.get().isSignedIn()) {
-                    auth.signIn().then((user) => {
-                        resolve(user);
-                    }).catch( (e) => {
-                        reject(e);
-                    });
+                    auth.signIn().then(
+                        (user) => {
+                            resolve(user);
+                        },
+                        (error) => {
+                            reject(error);
+                        }
+                    )
                 }
                 else {
                     resolve(auth.currentUser);
@@ -49,157 +63,215 @@ export default class DriveAppsUtil {
     }
 
     logout() {
-        console.log("logout");
+        if (debug) console.log("drive-apps-util_logout");
         window.gapi.auth2.getAuthInstance().currentUser.get().disconnect();
     }
 
     getDocumentContent(id) {
-        console.log("getDocumentContent");
+        if (debug) console.log("drive-apps-util_getDocumentContent");
         return new Promise((resolve, reject) => {
-            gapi.client.request({ 'path': 'https://www.googleapis.com/drive/v3/files/' + id, 'params': { 'alt': 'media' } })
-                .then(function (response) {
-                    resolve(response.body);
-                },
-                    (reason) => {
-                        reject(reason);
-                    });
+            try{
+                gapi.client.request({ 'path': 'https://www.googleapis.com/drive/v3/files/' + id, 'params': { 'alt': 'media' } })
+                    .then(
+                        (response) => {
+                            resolve(response.body);
+                        },
+                        (error) => {
+                            reject(error);
+                        }
+                    );
+            } catch (e) {
+                reject(e);
+            }
         });
     }
 
     getDocumentMeta(id) {
-        console.log("getDocumentMeta");
+        if (debug) console.log("drive-apps-util_getDocumentMeta");
         return new Promise((resolve, reject) => {
-            gapi.client.request({ 'path': 'https://www.googleapis.com/drive/v3/files/' + id, 'params': { 'supportsTeamDrives': true } })
-                .then(function (response) {
-                    let fileinfo = JSON.parse(response.body);
-                    resolve(fileinfo);
-                },
-                    function (reason) {
-                        reject(reason);
-                    });
+            try {
+                gapi.client.request({ 'path': 'https://www.googleapis.com/drive/v3/files/' + id, 'params': { 'supportsTeamDrives': true } })
+                    .then(
+                        (response) => {
+                            let fileinfo = JSON.parse(response.body);
+                            resolve(fileinfo);
+                        },
+                        (error) => {
+                            reject(error);
+                        }
+                    );
+            } catch (e) {
+                reject(e);
+            }
         });
-
     }
 
     updateDocumentMeta(id, metadata) {
-        console.log("updatemetadata");
+        if (debug) console.log("drive-apps-util_updateDocumentMeta");
         return new Promise((resolve, reject) => {
-            gapi.client.request({
-                'method': 'PATCH',
-                'body': metadata,
-                'path': 'https://www.googleapis.com/drive/v3/files/' + id,
-                'params': { 'supportsTeamDrives': true }
-            }).then((response) => {
-                let fileinfo = JSON.parse(response.body);
-                resolve(fileinfo);
-            });
-        });
-    }
-
-    updateDocument(id, metadata, content) {
-        console.log("updatecontent");
-        return new Promise((resolve, reject) => {
-            let contentlength = 0;
-            if (metadata) {
-                contentlength = JSON.stringify(metadata).length;
-            }
-            if (content) {
-                gapi.client.request({
-                    'method': 'PATCH',
-                    'body': metadata,
-                    'path': 'https://www.googleapis.com/upload/drive/v3/files/' + id,
-                    'params': {
-                        'uploadType': 'resumable', 'supportsTeamDrives': true,
-                        'headers': {
-                            'Content-Type': 'application/json; charset=UTF-8',
-                            'Content-Length': contentlength
-                        }
-                    }
-                }).then((response) => {
-                    let contentlength = 0;
-                    if (content) {
-                        contentlength = content.length;
-                    }
-                    gapi.client.request({
-                        'method': 'PUT',
-                        'body': content,
-                        'path': response.headers.location,
-                        'headers': {
-                            'Content-Type': metadata.mimeType,
-                            'Content-Length': contentlength
-                        }
-                    }).then((response) => {
-                        let fileinfo = JSON.parse(response.body);
-                        resolve(fileinfo);
-                    });
-                });
-            }
-            else {
+            try {
                 gapi.client.request({
                     'method': 'PATCH',
                     'body': metadata,
                     'path': 'https://www.googleapis.com/drive/v3/files/' + id,
-                    'params': {
-                        'supportsTeamDrives': true
+                    'params': { 'supportsTeamDrives': true }
+                }).then(
+                    (response) => {
+                        let fileinfo = JSON.parse(response.body);
+                        resolve(fileinfo);
+                    },
+                    (error) => {
+                        reject(error);
                     }
-                }).then((response) => {
-                    let fileinfo = JSON.parse(response.body);
-                    resolve(fileinfo);
-                });
+                );
+            } catch(e) {
+                reject(e);
+            }
+        });
+    }
+
+    updateDocument(id, metadata, content) {
+        if (debug) console.log("drive-apps-util_updateDocument");
+        return new Promise((resolve, reject) => {
+            try {
+                let contentlength = 0;
+                if (metadata) {
+                    contentlength = JSON.stringify(metadata).length;
+                }
+                if (content) {
+                    gapi.client.request({
+                        'method': 'PATCH',
+                        'body': metadata,
+                        'path': 'https://www.googleapis.com/upload/drive/v3/files/' + id,
+                        'params': {
+                            'uploadType': 'resumable', 'supportsTeamDrives': true,
+                            'headers': {
+                                'Content-Type': 'application/json; charset=UTF-8',
+                                'Content-Length': contentlength
+                            }
+                        }
+                    }).then(
+                        (response) => {
+                            let contentlength = 0;
+                            if (content) {
+                                contentlength = content.length;
+                            }
+                            gapi.client.request({
+                                'method': 'PUT',
+                                'body': content,
+                                'path': response.headers.location,
+                                'headers': {
+                                    'Content-Type': metadata.mimeType,
+                                    'Content-Length': contentlength
+                                }
+                            }).then(
+                                (response) => {
+                                    let fileinfo = JSON.parse(response.body);
+                                    resolve(fileinfo);
+                                },
+                                (error) => {
+                                    reject(error);
+                                }
+                            );
+                        },
+                        (error) => {
+                            reject(error);
+                        }
+                    );
+                }
+                else {
+                    gapi.client.request({
+                        'method': 'PATCH',
+                        'body': metadata,
+                        'path': 'https://www.googleapis.com/drive/v3/files/' + id,
+                        'params': {
+                            'supportsTeamDrives': true
+                        }
+                    }).then(
+                        (response) => {
+                            let fileinfo = JSON.parse(response.body);
+                            resolve(fileinfo);
+                        },
+                        (error) => {
+                            reject(error);
+                        }
+                    );
+                }
+            } catch (e) {
+                reject(e);
             }
         });
     }
 
     createDocument(metadata, content) {
-        console.log("createdocument");
+        if (debug) console.log("drive-apps-util_createDocument");
         return new Promise((resolve, reject) => {
-            let contentlength = 0;
-            if (metadata) {
-                contentlength = JSON.stringify(metadata).length;
-            }
-            if (content) {
-                gapi.client.request({
-                    'method': 'POST',
-                    'body': metadata,
-                    'path': 'https://www.googleapis.com/upload/drive/v3/files',
-                    'params': {
-                        'uploadType': 'resumable', 'supportsTeamDrives': true,
-                        'headers': {
-                            'Content-Type': 'application/json; charset=UTF-8',
-                            'Content-Length': contentlength
-                        }
-                    }
-                }).then((response) => {
-                    let contentlength = 0;
-                    if (content) {
-                        contentlength = content.length;
-                    }
+            try {
+                let contentlength = 0;
+                if (metadata) {
+                    contentlength = JSON.stringify(metadata).length;
+                }
+                if (content) {
                     gapi.client.request({
-                        'method': 'PUT',
-                        'body': content,
-                        'path': response.headers.location,
-                        'headers': {
-                            'Content-Type': metadata.mimeType,
-                            'Content-Length': contentlength
+                        'method': 'POST',
+                        'body': metadata,
+                        'path': 'https://www.googleapis.com/upload/drive/v3/files',
+                        'params': {
+                            'uploadType': 'resumable', 'supportsTeamDrives': true,
+                            'headers': {
+                                'Content-Type': 'application/json; charset=UTF-8',
+                                'Content-Length': contentlength
+                            }
                         }
-                    }).then((response) => {
-                        let fileinfo = JSON.parse(response.body);
-                        resolve(fileinfo);
-                    });
-                });
-            }
-            else {
-                gapi.client.request({
-                    'method': 'POST',
-                    'body': metadata,
-                    'path': 'https://www.googleapis.com/drive/v3/files',
-                    'params': {
-                        'supportsTeamDrives': true
-                    }
-                }).then((response) => {
-                    let fileinfo = JSON.parse(response.body);
-                    resolve(fileinfo);
-                });
+                    }).then(
+                        (response) => {
+                            let contentlength = 0;
+                            if (content) {
+                                contentlength = content.length;
+                            }
+                            gapi.client.request({
+                                'method': 'PUT',
+                                'body': content,
+                                'path': response.headers.location,
+                                'headers': {
+                                    'Content-Type': metadata.mimeType,
+                                    'Content-Length': contentlength
+                                }
+                            }).then(
+                                (response) => {
+                                    let fileinfo = JSON.parse(response.body);
+                                    resolve(fileinfo);
+                                },
+                                (error) => {
+                                    reject(error);
+                                }
+                            );
+                        },
+                        (error) => {
+                            reject(error);
+                        }
+                    );
+                }
+                else {
+                    gapi.client.request({
+                        'method': 'POST',
+                        'body': metadata,
+                        'path': 'https://www.googleapis.com/drive/v3/files',
+                        'params': {
+                            'supportsTeamDrives': true
+                        }
+                    }).then(
+                        (response) => {
+                            let fileinfo = JSON.parse(response.body);
+                            resolve(fileinfo);
+                        },
+                        (error) => {
+                            reject(error);
+                        }
+                    );
+                }
+            } catch (e) {
+                reject(e);
             }
         });
     }
