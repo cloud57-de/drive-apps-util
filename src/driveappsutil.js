@@ -46,7 +46,7 @@ export default class DriveAppsUtil {
                 if (auth.currentUser.get() == undefined || !auth.currentUser.get().isSignedIn()) {
                     auth.signIn().then(
                         (user) => {
-                            resolve(user);
+                            resolve(auth.currentUser);
                         },
                         (error) => {
                             reject(error);
