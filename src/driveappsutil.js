@@ -1,5 +1,4 @@
 import LoadGoogleApi from "load-google-api";
-import { resolve } from "upath";
 
 let debug = false;
 
